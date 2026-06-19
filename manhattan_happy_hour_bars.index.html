@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manhattan Happy Hour & Late Night Bars</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #555;
+    --color-text-tertiary: #999;
+    --color-text-warning: #8A6D1F;
+    --color-text-info: #185FA5;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f5f4;
+    --color-background-info: #E6F0F9;
+    --color-background-warning: #FBF3E0;
+    --color-border-tertiary: #e0e0de;
+    --color-border-secondary: #c5c5c2;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-sans); background: #fafafa; color: var(--color-text-primary); }
+  .container { max-width: 1000px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+  .header { margin-bottom: 1.5rem; }
+  .header h2 { font-size: 22px; font-weight: 600; margin-bottom: 0.35rem; }
+  .header p { font-size: 14px; color: var(--color-text-secondary); }
+
+  .filters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+  .filter-group { display: flex; flex-direction: column; gap: 6px; }
+  .filter-group label { font-size: 13px; font-weight: 500; }
+  .filter-group select { padding: 9px 12px; border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; background: var(--color-background-primary); color: var(--color-text-primary); }
+  .filter-group select:hover { border-color: var(--color-border-secondary); }
+
+  #map { width: 100%; height: 440px; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border-tertiary); margin-bottom: 1.25rem; }
+
+  .info-panel { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+  .panel-head h3 { font-size: 16px; font-weight: 600; }
+  .legend { display: flex; gap: 12px; font-size: 11px; color: var(--color-text-secondary); flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  .bar-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .bar-card { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 0.85rem 1.1rem; cursor: pointer; transition: all 0.2s; }
+  .bar-card:hover { border-color: var(--color-border-secondary); background: var(--color-background-secondary); }
+  .bar-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  .tag { font-size: 10px; padding: 1px 7px; border-radius: 4px; font-weight: 400; }
+  .type-bar { background: var(--color-background-info); color: var(--color-text-info); }
+  .type-rest { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .tag-late { background: #2A2A40; color: #C9C2F0; }
+
+  .bar-info { font-size: 12.5px; color: var(--color-text-secondary); line-height: 1.6; }
+  .close-line { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12.5px; font-weight: 500; }
+  .hh-row { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; background: var(--color-background-warning); padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--color-text-warning); }
+  .pending-hh { margin-top: 6px; font-size: 12px; color: var(--color-text-tertiary); font-style: italic; }
+  .bar-meta { display: flex; gap: 14px; margin-top: 8px; font-size: 11.5px; flex-wrap: wrap; }
+  .meta-item { display: flex; align-items: center; gap: 3px; }
+  .rating { color: var(--color-text-warning); font-weight: 500; }
+  .no-results { text-align: center; padding: 2rem 1rem; color: var(--color-text-secondary); }
+  .note { margin-top: 1rem; font-size: 11.5px; color: var(--color-text-tertiary); line-height: 1.5; }
+  @media (max-width: 600px) { .filters { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h2>Manhattan Happy Hour &amp; Late Night Bars</h2>
+    <p>全<span id="totalCount">26</span>店舗 営業時間確認済み・25〜52丁目エリア</p>
+  </div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label for="lateFilter">深夜営業</label>
+      <select id="lateFilter">
+        <option value="">すべて</option>
+        <option value="late">深夜2時以降まで営業</option>
+        <option value="early">深夜2時前に閉店</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="typeFilter">種別</label>
+      <select id="typeFilter">
+        <option value="">すべて</option>
+        <option value="Bar">バー</option>
+        <option value="Restaurant">レストラン</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="hhFilter">ハッピーアワー</label>
+      <select id="hhFilter">
+        <option value="">すべて</option>
+        <option value="毎日">毎日実施</option>
+        <option value="weekday">平日実施</option>
+        <option value="known">時間判明のみ</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="info-panel">
+    <div class="panel-head">
+      <h3>施設一覧 (<span id="barCount">26</span>件)</h3>
+      <div class="legend">
+        <span><span class="dot" style="background:#185FA5"></span>バー</span>
+        <span><span class="dot" style="background:#639922"></span>レストラン</span>
+        <span><span class="dot" style="background:#7C6FD4"></span>深夜営業</span>
+      </div>
+    </div>
+    <div class="bar-list" id="barList"></div>
+    <div id="noResults" class="no-results" style="display:none;">条件に合う施設はありません</div>
+    <div class="note" id="footNote"></div>
+  </div>
+</div>
+
+<script>
+const barData = [
+  { name:"Tipsy Turtle Bar and Cafe", address:"1003 2nd Ave, NY 10022", lat:40.7534, lng:-73.9703, closeWk:24, closeFr:24, hhDays:"平日", hhTime:"16:00-19:00", price:"$20-30", rating:"4.7", type:"Bar", detail:"毎日24時" },
+  { name:"Monkey Bar", address:"60 E 54th St, NY 10022", lat:40.7553, lng:-73.9703, closeWk:23, closeFr:23, hhDays:"あり", hhTime:"要確認", price:"$100+", rating:"4.5", type:"Restaurant", detail:"日月22:30 火-土23時" },
+  { name:"Turtle Bay Tavern", address:"975 2nd Ave, NY 10022", lat:40.7560, lng:-73.9681, closeWk:27, closeFr:28, hhDays:"あり", hhTime:"要確認", price:"$40-50", rating:"4.8", type:"Bar", detail:"月-水/日3時 木-土4時" },
+  { name:"ART Midtown - Rooftop Bars", address:"351 W 38th St, NY 10018", lat:40.7536, lng:-73.9908, closeWk:23, closeFr:24, hhDays:"あり", hhTime:"要確認", price:"$30-50", rating:"4.6", type:"Bar", detail:"平日23時 金土24時" },
+  { name:"Sir Henry's", address:"795 8th Ave, NY 10019", lat:40.7619, lng:-73.9874, closeWk:27, closeFr:28, hhDays:"毎日", hhTime:"16:00-19:00", price:"$20-70", rating:"4.8", type:"Bar", detail:"日-火2時 水木3時 金土4時" },
+  { name:"Isla & Co. - Midtown", address:"25 W 38th St, NY 10018", lat:40.7513, lng:-73.9831, closeWk:22, closeFr:22, hhDays:"あり", hhTime:"要確認", price:"$$", rating:"4.8", type:"Restaurant", detail:"22時" },
+  { name:"Haswell Green's", address:"240 W 52nd St, NY 10019", lat:40.7693, lng:-73.9884, closeWk:27, closeFr:28, hhDays:"火-金", hhTime:"16:00-20:00", price:"$20-50", rating:"4.7", type:"Bar", detail:"月-水/日3時 木-土4時" },
+  { name:"Frida Midtown", address:"214 E 52nd St, NY 10022", lat:40.7558, lng:-73.9703, closeWk:23, closeFr:25, hhDays:"あり", hhTime:"要確認", price:"$30-70", rating:"4.5", type:"Restaurant", detail:"月-木23時 金土1時" },
+  { name:"The Elgin", address:"64 W 48th St, NY 10036", lat:40.7583, lng:-73.9857, closeWk:24, closeFr:24, hhDays:"あり", hhTime:"要確認", price:"$20-60", rating:"4.5", type:"Restaurant", detail:"平日24時 日22時" },
+  { name:"Golden HOF", address:"16 W 48th St, NY 10036", lat:40.7575, lng:-73.9805, closeWk:22, closeFr:23, hhDays:"月-金", hhTime:"15:00-18:00", price:"$$$", rating:"4.0", type:"Restaurant", detail:"日-木22時 金土23時" },
+  { name:"The Dynamo Room", address:"2 Penn Plaza, NY 10121", lat:40.7505, lng:-73.9920, closeWk:22, closeFr:23, hhDays:"毎日", hhTime:"16:00-18:00", price:"$$$", rating:"-", type:"Restaurant", detail:"火-木22時 金土23時(バーは深夜)" },
+  { name:"Double Knot", address:"1251 6th Ave, NY 10020", lat:40.7595, lng:-73.9815, closeWk:22, closeFr:24, hhDays:"毎日", hhTime:"16:00-18:00", price:"$$$", rating:"-", type:"Restaurant", detail:"日-火22時 水木23時 金土24時" },
+  { name:"Musaek", address:"6 E 32nd St, NY 10016", lat:40.7468, lng:-73.9845, closeWk:23, closeFr:26, hhDays:"火-土", hhTime:"17:00-19:00", price:"$$$", rating:"-", type:"Restaurant", detail:"火水23時 木1時 金土2時" },
+  { name:"Crave Fishbar", address:"945 2nd Ave, NY 10022", lat:40.7543, lng:-73.9676, closeWk:22, closeFr:22, hhDays:"毎日", hhTime:"17:00-18:30", price:"$$$", rating:"-", type:"Restaurant", detail:"毎日22時" },
+  { name:"Printers Alley", address:"215 W 40th St, NY 10018", lat:40.7548, lng:-73.9893, closeWk:27, closeFr:28, hhDays:"毎日", hhTime:"11:00-19:00", price:"$$$", rating:"-", type:"Bar", detail:"月-水3時 木-日4時" },
+  { name:"Valerie", address:"45 W 45th St, NY 10036", lat:40.7563, lng:-73.9818, closeWk:26, closeFr:26, hhDays:"平日", hhTime:"16:00-19:00", price:"$$$", rating:"-", type:"Bar", detail:"火-土2時 月日24時" },
+  { name:"La Cava", address:"939 2nd Ave, NY 10022", lat:40.7540, lng:-73.9678, closeWk:26, closeFr:27, hhDays:"毎日", hhTime:"~19:00 (深夜HHあり)", price:"$$$", rating:"-", type:"Bar", detail:"月火1時 水2時 木-日3時" },
+  { name:"Beer Authority", address:"300 W 40th St, NY 10018", lat:40.7558, lng:-73.9918, closeWk:26, closeFr:28, hhDays:"平日", hhTime:"11:00-19:00", price:"$$$", rating:"-", type:"Bar", detail:"日-水2時 木-土4時" },
+  { name:"Castell Rooftop Lounge", address:"260 W 40th St, NY 10018", lat:40.7555, lng:-73.9905, closeWk:23, closeFr:25, hhDays:"平日", hhTime:"16:00-18:00", price:"$$$", rating:"-", type:"Bar", detail:"月-木23時 金土1時" },
+  { name:"The Shakespeare", address:"24 E 39th St, NY 10016", lat:40.7502, lng:-73.9808, closeWk:24, closeFr:24, hhDays:"月-金", hhTime:"11:00-18:00", price:"$$$", rating:"-", type:"Bar", detail:"月-土24時 日休" },
+  { name:"The Rum House", address:"228 W 47th St, NY 10036", lat:40.7595, lng:-73.9868, closeWk:25, closeFr:26, hhDays:"毎日", hhTime:"16:00-18:00", price:"$$$", rating:"-", type:"Bar", detail:"日-木1時 金土2時" },
+  { name:"Peter Dillon's Pub", address:"130 E 40th St, NY 10016", lat:40.7505, lng:-73.9768, closeWk:28, closeFr:28, hhDays:"平日", hhTime:"17:00-19:00", price:"$$$", rating:"-", type:"Bar", detail:"毎日4時" },
+  { name:"Juniper", address:"237 W 35th St, NY 10001", lat:40.7525, lng:-73.9905, closeWk:24, closeFr:25, hhDays:"毎日", hhTime:"16:00-19:00", price:"$$$", rating:"-", type:"Bar", detail:"月24時 火-土1時 日23時" },
+  { name:"Playwright Irish Pub", address:"27 W 35th St, NY 10001", lat:40.7502, lng:-73.9855, closeWk:28, closeFr:28, hhDays:"平日", hhTime:"16:00-20:00", price:"$$$", rating:"-", type:"Bar", detail:"毎日4時" },
+  { name:"The Friki Tiki", address:"357 W 44th St, NY 10036", lat:40.7593, lng:-73.9905, closeWk:25, closeFr:26, hhDays:"火-土", hhTime:"17:00-20:00", price:"$$$", rating:"-", type:"Bar", detail:"火-木1時 金土2時 日月休" },
+  { name:"Hofbräu Bierhaus", address:"712 3rd Ave, NY 10017", lat:40.7528, lng:-73.9748, closeWk:22, closeFr:24, hhDays:"月-木", hhTime:"16:00-18:30", price:"$$$", rating:"-", type:"Restaurant", detail:"月火22時 水23時 木-土24時 日22時" }
+];
+
+barData.forEach(b => { b.late = Math.max(b.closeWk, b.closeFr) >= 26; });
+
+let map, markers = {}, filtered = [...barData];
+
+function fmtClose(h) {
+  if (h === 24) return "24:00";
+  if (h < 24) return h + ":00";
+  return "深夜" + (h-24) + ":00";
+}
+function colorFor(b) {
+  if (b.late) return { fill:'#7C6FD4', stroke:'#5848B0' };
+  return b.type === "Bar" ? { fill:'#185FA5', stroke:'#0C447C' } : { fill:'#639922', stroke:'#3B6D11' };
+}
+
+function initMap() {
+  map = L.map('map').setView([40.754, -73.982], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
+  barData.forEach(b => {
+    const c = colorFor(b);
+    const m = L.circleMarker([b.lat, b.lng], { radius: 7, fillColor: c.fill, color: c.stroke, weight: 2, opacity: 1, fillOpacity: 0.9 }).addTo(map);
+    const hh = b.hhTime !== "要確認" ? "<br>🍸 HH: " + b.hhDays + " " + b.hhTime : "";
+    m.bindPopup("<strong>" + b.name + "</strong><br>" + b.address + "<br>🕐 " + b.detail + hh);
+    m.on('click', () => focusBar(b));
+    markers[b.name] = { m, b };
+  });
+}
+function focusBar(b) {
+  Object.values(markers).forEach(({m, b}) => { const c = colorFor(b); m.setStyle({ fillColor: c.fill, color: c.stroke }); });
+  if (markers[b.name]) { markers[b.name].m.setStyle({ fillColor: '#E24B4A', color: '#A32D2D' }); map.setView([b.lat, b.lng], 15); markers[b.name].m.openPopup(); }
+}
+function isWeekdayHH(d) { return ["毎日","平日","月-金","月-土","火-土","火-木","火-金","月-木"].includes(d); }
+
+function applyFilters() {
+  const lateF = document.getElementById('lateFilter').value;
+  const typeF = document.getElementById('typeFilter').value;
+  const hhF = document.getElementById('hhFilter').value;
+  filtered = barData.filter(b => {
+    if (typeF && b.type !== typeF) return false;
+    if (lateF === "late" && !b.late) return false;
+    if (lateF === "early" && b.late) return false;
+    if (hhF === "毎日" && b.hhDays !== "毎日") return false;
+    if (hhF === "weekday" && !isWeekdayHH(b.hhDays)) return false;
+    if (hhF === "known" && b.hhTime === "要確認") return false;
+    return true;
+  });
+  render();
+}
+
+function render() {
+  const list = document.getElementById('barList');
+  const noEl = document.getElementById('noResults');
+  document.getElementById('barCount').textContent = filtered.length;
+  list.innerHTML = '';
+  if (!filtered.length) { noEl.style.display = 'block'; document.getElementById('footNote').textContent=''; return; }
+  noEl.style.display = 'none';
+
+  const sorted = [...filtered].sort((a,b) => (b.late?1:0)-(a.late?1:0) || Math.max(b.closeWk,b.closeFr)-Math.max(a.closeWk,a.closeFr));
+
+  sorted.forEach(b => {
+    const typeClass = b.type === "Bar" ? "type-bar" : "type-rest";
+    const typeLabel = b.type === "Bar" ? "バー" : "レストラン";
+    const lateTag = b.late ? '<span class="tag tag-late">深夜営業</span>' : '';
+    const hhRow = b.hhTime !== "要確認"
+      ? '<div class="hh-row">🍸 HH: ' + b.hhDays + ' ' + b.hhTime + '</div>'
+      : '<div class="pending-hh">🍸 ハッピーアワーあり（時間要確認）</div>';
+    const ratingDisplay = (b.rating && b.rating !== "-") ? '<div class="meta-item"><span class="rating">⭐ ' + b.rating + '</span></div>' : '';
+
+    const card = document.createElement('div');
+    card.className = 'bar-card';
+    card.innerHTML =
+      '<h4>' + b.name + ' <span class="tag ' + typeClass + '">' + typeLabel + '</span>' + lateTag + '</h4>' +
+      '<div class="bar-info">📍 ' + b.address + '</div>' +
+      '<div class="close-line">🕐 ' + b.detail + '（最終 ' + fmtClose(Math.max(b.closeWk,b.closeFr)) + '）</div>' +
+      hhRow +
+      '<div class="bar-meta">' + ratingDisplay + '<div class="meta-item">💰 ' + b.price + '</div></div>';
+    card.addEventListener('click', () => focusBar(b));
+    list.appendChild(card);
+  });
+
+  const lateCount = filtered.filter(b => b.late).length;
+  document.getElementById('footNote').textContent = '表示中 ' + filtered.length + '件のうち深夜営業（2時以降）は ' + lateCount + '件。営業時間・HHは変更される場合があるため訪問前にご確認ください。';
+}
+
+document.getElementById('lateFilter').addEventListener('change', applyFilters);
+document.getElementById('typeFilter').addEventListener('change', applyFilters);
+document.getElementById('hhFilter').addEventListener('change', applyFilters);
+
+initMap();
+render();
+</script>
+
+</body>
+</html>
