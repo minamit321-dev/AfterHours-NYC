@@ -1,12 +1,4 @@
-court
-
-<invoke name="create_file">
-
-<parameter name="description">Updated index.html with cuisine and happy hour drink emojis added to all 26 venues</parameter>
-
-<parameter name="path">/mnt/user-data/outputs/index.html</parameter>
-
-<parameter name="file_text"><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -37,73 +29,54 @@ court
   .header { margin-bottom: 1.5rem; }
   .header h2 { font-size: 22px; font-weight: 600; margin-bottom: 0.35rem; }
   .header p { font-size: 14px; color: var(--color-text-secondary); }
-.filters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
 
-.filter-group { display: flex; flex-direction: column; gap: 6px; }
+  .filters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+  .filter-group { display: flex; flex-direction: column; gap: 6px; }
+  .filter-group label { font-size: 13px; font-weight: 500; }
+  .filter-group select { padding: 9px 12px; border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; background: var(--color-background-primary); color: var(--color-text-primary); }
+  .filter-group select:hover { border-color: var(--color-border-secondary); }
 
-.filter-group label { font-size: 13px; font-weight: 500; }
+  #map { width: 100%; height: 440px; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border-tertiary); margin-bottom: 1.25rem; }
 
-.filter-group select { padding: 9px 12px; border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; background: var(--color-background-primary); color: var(--color-text-primary); }
+  .info-panel { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+  .panel-head h3 { font-size: 16px; font-weight: 600; }
+  .legend { display: flex; gap: 12px; font-size: 11px; color: var(--color-text-secondary); flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 
-.filter-group select:hover { border-color: var(--color-border-secondary); }
-#map { width: 100%; height: 440px; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border-tertiary); margin-bottom: 1.25rem; }
-.info-panel { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .bar-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .bar-card { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 0.85rem 1.1rem; cursor: pointer; transition: all 0.2s; }
+  .bar-card:hover { border-color: var(--color-border-secondary); background: var(--color-background-secondary); }
+  .bar-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .cuisine-emoji { font-size: 17px; }
 
-.panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+  .tag { font-size: 10px; padding: 1px 7px; border-radius: 4px; font-weight: 400; }
+  .type-bar { background: var(--color-background-info); color: var(--color-text-info); }
+  .type-rest { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .tag-late { background: #2A2A40; color: #C9C2F0; }
 
-.panel-head h3 { font-size: 16px; font-weight: 600; }
-
-.legend { display: flex; gap: 12px; font-size: 11px; color: var(--color-text-secondary); flex-wrap: wrap; }
-
-.legend span { display: inline-flex; align-items: center; gap: 4px; }
-
-.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-.bar-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
-
-.bar-card { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 0.85rem 1.1rem; cursor: pointer; transition: all 0.2s; }
-
-.bar-card:hover { border-color: var(--color-border-secondary); background: var(--color-background-secondary); }
-
-.bar-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-
-.cuisine-emoji { font-size: 17px; }
-.tag { font-size: 10px; padding: 1px 7px; border-radius: 4px; font-weight: 400; }
-
-.type-bar { background: var(--color-background-info); color: var(--color-text-info); }
-
-.type-rest { background: var(--color-background-secondary); color: var(--color-text-secondary); }
-
-.tag-late { background: #2A2A40; color: #C9C2F0; }
-.bar-info { font-size: 12.5px; color: var(--color-text-secondary); line-height: 1.6; }
-
-.close-line { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12.5px; font-weight: 500; }
-
-.hh-row { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; background: var(--color-background-warning); padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--color-text-warning); }
-
-.hh-drinks { font-size: 14px; letter-spacing: 1px; }
-
-.pending-hh { margin-top: 6px; font-size: 12px; color: var(--color-text-tertiary); font-style: italic; }
-
-.bar-meta { display: flex; gap: 14px; margin-top: 8px; font-size: 11.5px; flex-wrap: wrap; }
-
-.meta-item { display: flex; align-items: center; gap: 3px; }
-
-.rating { color: var(--color-text-warning); font-weight: 500; }
-
-.no-results { text-align: center; padding: 2rem 1rem; color: var(--color-text-secondary); }
-
-.note { margin-top: 1rem; font-size: 11.5px; color: var(--color-text-tertiary); line-height: 1.5; }
-
-@media (max-width: 600px) { .filters { grid-template-columns: 1fr; } }
-
+  .bar-info { font-size: 12.5px; color: var(--color-text-secondary); line-height: 1.6; }
+  .close-line { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12.5px; font-weight: 500; }
+  .hh-row { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; background: var(--color-background-warning); padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--color-text-warning); }
+  .hh-drinks { font-size: 14px; letter-spacing: 1px; }
+  .pending-hh { margin-top: 6px; font-size: 12px; color: var(--color-text-tertiary); font-style: italic; }
+  .bar-meta { display: flex; gap: 14px; margin-top: 8px; font-size: 11.5px; flex-wrap: wrap; }
+  .meta-item { display: flex; align-items: center; gap: 3px; }
+  .rating { color: var(--color-text-warning); font-weight: 500; }
+  .no-results { text-align: center; padding: 2rem 1rem; color: var(--color-text-secondary); }
+  .note { margin-top: 1rem; font-size: 11.5px; color: var(--color-text-tertiary); line-height: 1.5; }
+  @media (max-width: 600px) { .filters { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
+
 <div class="container">
   <div class="header">
     <h2>Manhattan Happy Hour &amp; Late Night Bars</h2>
-    <p>全<span id="totalCount">26</span>店舗・🍺ビール 🍷ワイン 🥂シャンパン系 🥃ウイスキー 🍸カクテル</p>
+    <p>全<span id="totalCount">30</span>店舗・🍺ビール 🍷ワイン 🥂シャンパン系 🥃ウイスキー 🍸カクテル</p>
   </div>
+
   <div class="filters">
     <div class="filter-group">
       <label for="lateFilter">深夜営業</label>
@@ -131,10 +104,12 @@ court
       </select>
     </div>
   </div>
+
   <div id="map"></div>
+
   <div class="info-panel">
     <div class="panel-head">
-      <h3>施設一覧 (<span id="barCount">26</span>件)</h3>
+      <h3>施設一覧 (<span id="barCount">30</span>件)</h3>
       <div class="legend">
         <span><span class="dot" style="background:#185FA5"></span>バー</span>
         <span><span class="dot" style="background:#639922"></span>レストラン</span>
@@ -146,6 +121,7 @@ court
     <div class="note" id="footNote"></div>
   </div>
 </div>
+
 <script>
 const barData = [
   { name:"Tipsy Turtle Bar and Cafe", cuisine:"🍔", cuisineLabel:"アメリカン(スポーツバー)", address:"1003 2nd Ave, NY 10022", lat:40.7534, lng:-73.9703, closeWk:24, closeFr:24, hhDays:"平日", hhTime:"16:00-19:00", hhDrinks:"🍺🍷🍸", price:"$20-30", rating:"4.7", type:"Bar", detail:"毎日24時" },
@@ -173,7 +149,11 @@ const barData = [
   { name:"Juniper", cuisine:"🍔", cuisineLabel:"アメリカン(バー&グリル)", address:"237 W 35th St, NY 10001", lat:40.7525, lng:-73.9905, closeWk:24, closeFr:25, hhDays:"毎日", hhTime:"16:00-19:00", hhDrinks:"🍺🍷🍸", price:"$$$", rating:"-", type:"Bar", detail:"月24時 火-土1時 日23時" },
   { name:"Playwright Irish Pub", cuisine:"🍔", cuisineLabel:"アイリッシュ/アメリカン", address:"27 W 35th St, NY 10001", lat:40.7502, lng:-73.9855, closeWk:28, closeFr:28, hhDays:"平日", hhTime:"16:00-20:00", hhDrinks:"🍺🍷🍸", price:"$$$", rating:"-", type:"Bar", detail:"毎日4時" },
   { name:"The Friki Tiki", cuisine:"🏝️", cuisineLabel:"ティキ(トロピカル)", address:"357 W 44th St, NY 10036", lat:40.7593, lng:-73.9905, closeWk:25, closeFr:26, hhDays:"火-土", hhTime:"17:00-20:00", hhDrinks:"🍺🍷🍸", price:"$$$", rating:"-", type:"Bar", detail:"火-木1時 金土2時 日月休" },
-  { name:"Hofbräu Bierhaus", cuisine:"🥨", cuisineLabel:"ドイツ料理(ビアホール)", address:"712 3rd Ave, NY 10017", lat:40.7528, lng:-73.9748, closeWk:22, closeFr:24, hhDays:"月-木", hhTime:"16:00-18:30", hhDrinks:"🍺🍷🍸", price:"$$$", rating:"-", type:"Restaurant", detail:"月火22時 水23時 木-土24時 日22時" }
+  { name:"Hofbräu Bierhaus", cuisine:"🥨", cuisineLabel:"ドイツ料理(ビアホール)", address:"712 3rd Ave, NY 10017", lat:40.7528, lng:-73.9748, closeWk:22, closeFr:24, hhDays:"月-木", hhTime:"16:00-18:30", hhDrinks:"🍺🍷🍸", price:"$$$", rating:"-", type:"Restaurant", detail:"月火22時 水23時 木-土24時 日22時" },
+  { name:"VERSA", cuisine:"🍕", cuisineLabel:"ルーフトップ(ニューアメリカン)", address:"218 W 35th St, NY 10001", lat:40.7522, lng:-73.9905, closeWk:23, closeFr:24, hhDays:"あり", hhTime:"要確認", hhDrinks:"🍺🍷🍸", price:"$$$", rating:"-", type:"Bar", detail:"日-木23時 金土24時" },
+  { name:"Magic Hour Rooftop Bar & Lounge", cuisine:"🍕", cuisineLabel:"ルーフトップ(バーバイト)", address:"485 7th Ave, NY 10018", lat:40.7518, lng:-73.9893, closeWk:26, closeFr:28, hhDays:"平日", hhTime:"17:00-18:30", hhDrinks:"🍺🍷🥂", price:"$$$", rating:"-", type:"Bar", detail:"月-水24時 木2時 金土4時 日24時" },
+  { name:"The Mean Fiddler", cuisine:"🍔", cuisineLabel:"アイリッシュパブ(バーガー/ウィング)", address:"266 W 47th St, NY 10036", lat:40.7595, lng:-73.9866, closeWk:28, closeFr:28, hhDays:"毎日", hhTime:"12:00-20:00", hhDrinks:"🍺🍸", price:"$$", rating:"-", type:"Bar", detail:"毎日4時" },
+  { name:"Central Park Tavern", cuisine:"🍔", cuisineLabel:"アメリカン(スポーツバー/タバーン)", address:"327 W 57th St, NY 10019", lat:40.7672, lng:-73.9847, closeWk:26.5, closeFr:26.5, hhDays:"平日", hhTime:"要確認", hhDrinks:"🍺🍷🍸", price:"$$", rating:"-", type:"Bar", detail:"月-金 2:30時 土日11時開店-2:30時" }
 ];
 
 barData.forEach(b => { b.late = Math.max(b.closeWk, b.closeFr) >= 26; });
@@ -183,7 +163,9 @@ let map, markers = {}, filtered = [...barData];
 function fmtClose(h) {
   if (h === 24) return "24:00";
   if (h < 24) return h + ":00";
-  return "深夜" + (h-24) + ":00";
+  var hh = Math.floor(h - 24);
+  var mm = (h % 1) ? ":30" : ":00";
+  return "深夜" + hh + mm;
 }
 function colorFor(b) {
   if (b.late) return { fill:'#7C6FD4', stroke:'#5848B0' };
@@ -191,13 +173,13 @@ function colorFor(b) {
 }
 
 function initMap() {
-  map = L.map('map').setView([40.754, -73.982], 13);
+  map = L.map('map').setView([40.755, -73.982], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
   barData.forEach(b => {
     const c = colorFor(b);
     const m = L.circleMarker([b.lat, b.lng], { radius: 7, fillColor: c.fill, color: c.stroke, weight: 2, opacity: 1, fillOpacity: 0.9 }).addTo(map);
     const dr = b.hhDrinks !== "要確認" ? " " + b.hhDrinks : "";
-    const hh = b.hhTime !== "要確認" ? "<br>🍸 HH: " + b.hhDays + " " + b.hhTime + dr : "";
+    const hh = b.hhTime !== "要確認" ? "<br>🍸 HH: " + b.hhDays + " " + b.hhTime + dr : (b.hhDrinks !== "要確認" ? "<br>🍸 HH: " + b.hhDays + " " + dr : "");
     m.bindPopup("<strong>" + b.cuisine + " " + b.name + "</strong><br>" + b.cuisineLabel + "<br>" + b.address + "<br>🕐 " + b.detail + hh);
     m.on('click', () => focusBar(b));
     markers[b.name] = { m, b };
@@ -239,9 +221,14 @@ function render() {
     const typeClass = b.type === "Bar" ? "type-bar" : "type-rest";
     const typeLabel = b.type === "Bar" ? "バー" : "レストラン";
     const lateTag = b.late ? '<span class="tag tag-late">深夜営業</span>' : '';
-    const hhRow = b.hhTime !== "要確認"
-      ? '<div class="hh-row">🍸 HH: ' + b.hhDays + ' ' + b.hhTime + '　<span class="hh-drinks">' + b.hhDrinks + '</span></div>'
-      : '<div class="pending-hh">🍸 ハッピーアワーあり（時間・ドリンク要確認）</div>';
+    var hhRow;
+    if (b.hhTime !== "要確認") {
+      hhRow = '<div class="hh-row">🍸 HH: ' + b.hhDays + ' ' + b.hhTime + '　<span class="hh-drinks">' + b.hhDrinks + '</span></div>';
+    } else if (b.hhDrinks !== "要確認") {
+      hhRow = '<div class="hh-row">🍸 HH: ' + b.hhDays + '（時間要確認）　<span class="hh-drinks">' + b.hhDrinks + '</span></div>';
+    } else {
+      hhRow = '<div class="pending-hh">🍸 ハッピーアワーあり（時間・ドリンク要確認）</div>';
+    }
     const ratingDisplay = (b.rating && b.rating !== "-") ? '<div class="meta-item"><span class="rating">⭐ ' + b.rating + '</span></div>' : '';
 
     const card = document.createElement('div');
@@ -268,6 +255,6 @@ document.getElementById('hhFilter').addEventListener('change', applyFilters);
 initMap();
 render();
 </script>
+
 </body>
 </html>
-</parameter>
